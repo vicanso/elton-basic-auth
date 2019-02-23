@@ -1,4 +1,4 @@
-module github.com/vicanso/basicauth
+module github.com/vicanso/cod-basic-auth
 
 require (
 	github.com/vicanso/cod v0.0.0-20190223063755-b36df9b7f171
