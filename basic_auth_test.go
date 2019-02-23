@@ -13,7 +13,7 @@ import (
 func TestBasicAuth(t *testing.T) {
 	m := NewBasicAuth(Config{
 		Validate: func(account, pwd string, c *cod.Context) (bool, error) {
-			if account == "tree.xie" || pwd == "password" {
+			if account == "tree.xie" && pwd == "password" {
 				return true, nil
 			}
 			if account == "n" {
