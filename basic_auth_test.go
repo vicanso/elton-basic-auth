@@ -11,7 +11,7 @@ import (
 )
 
 func TestBasicAuth(t *testing.T) {
-	m := NewBasicAuth(Config{
+	m := New(Config{
 		Validate: func(account, pwd string, c *cod.Context) (bool, error) {
 			if account == "tree.xie" && pwd == "password" {
 				return true, nil
@@ -26,7 +26,7 @@ func TestBasicAuth(t *testing.T) {
 
 	t.Run("skip", func(t *testing.T) {
 		done := false
-		mSkip := NewBasicAuth(Config{
+		mSkip := New(Config{
 			Validate: func(account, pwd string, c *cod.Context) (bool, error) {
 				return false, nil
 			},
@@ -101,7 +101,7 @@ func TestBasicAuth(t *testing.T) {
 	})
 
 	t.Run("validate error", func(t *testing.T) {
-		mValidateFail := NewBasicAuth(Config{
+		mValidateFail := New(Config{
 			Validate: func(account, pwd string, c *cod.Context) (bool, error) {
 				return false, errors.New("abcd")
 			},

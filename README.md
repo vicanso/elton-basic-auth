@@ -20,7 +20,7 @@ import (
 func main() {
 	d := cod.New()
 
-	d.Use(basicauth.NewBasicAuth(basicauth.Config{
+	d.Use(basicauth.New(basicauth.Config{
 		Validate: func(account, pwd string, c *cod.Context) (bool, error) {
 			if account == "tree.xie" && pwd == "password" {
 				return true, nil

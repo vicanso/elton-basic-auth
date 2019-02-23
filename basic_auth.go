@@ -55,8 +55,8 @@ func getBasicAuthError(err error, statusCode int) *hes.Error {
 	}
 }
 
-// NewBasicAuth new basic auth
-func NewBasicAuth(config Config) cod.Handler {
+// New new basic auth
+func New(config Config) cod.Handler {
 	if config.Validate == nil {
 		panic("require validate function")
 	}
