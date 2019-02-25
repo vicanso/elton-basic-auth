@@ -26,8 +26,8 @@ import (
 
 const (
 	defaultRealm = "basic auth tips"
-	// ErrCategoryBasicAuth basic auth error category
-	ErrCategoryBasicAuth = "cod-basic-auth"
+	// ErrCategory basic auth error category
+	ErrCategory = "cod-basic-auth"
 )
 
 type (
@@ -50,7 +50,7 @@ func getBasicAuthError(err error, statusCode int) *hes.Error {
 	return &hes.Error{
 		StatusCode: statusCode,
 		Message:    err.Error(),
-		Category:   ErrCategoryBasicAuth,
+		Category:   ErrCategory,
 		Err:        err,
 	}
 }
@@ -75,7 +75,7 @@ func New(config Config) cod.Handler {
 		if skipper(c) {
 			return c.Next()
 		}
-		auth := c.Request.Header.Get(cod.HeaderAuthorization)
+		auth := c.GetRequestHeader(cod.HeaderAuthorization)
 		// 如果请求头无认证头，则返回出错
 		if len(auth) < basicLen+1 ||
 			strings.ToLower(auth[:basicLen]) != basic {
