@@ -47,12 +47,10 @@ var (
 )
 
 func getBasicAuthError(err error, statusCode int) *hes.Error {
-	return &hes.Error{
-		StatusCode: statusCode,
-		Message:    err.Error(),
-		Category:   ErrCategory,
-		Err:        err,
-	}
+	he := hes.Wrap(err)
+	he.StatusCode = statusCode
+	he.Category = ErrCategory
+	return he
 }
 
 // New new basic auth
