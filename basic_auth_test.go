@@ -63,21 +63,6 @@ func TestBasicAuth(t *testing.T) {
 		}
 	})
 
-	t.Run("auth value not base64", func(t *testing.T) {
-		d := cod.New()
-		d.Use(m)
-		d.GET("/", func(c *cod.Context) error {
-			return nil
-		})
-		req.Header.Set(cod.HeaderAuthorization, "basic 测试")
-		resp := httptest.NewRecorder()
-		d.ServeHTTP(resp, req)
-		if resp.Code != http.StatusBadRequest ||
-			resp.Body.String() != "category=cod-basic-auth, message=illegal base64 data at input byte 0" {
-			t.Fatalf("base64 decode fail error is invalid")
-		}
-	})
-
 	t.Run("auth validate fail", func(t *testing.T) {
 		d := cod.New()
 		d.Use(m)

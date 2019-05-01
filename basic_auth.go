@@ -15,10 +15,8 @@
 package basicauth
 
 import (
-	"encoding/base64"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/vicanso/cod"
 	"github.com/vicanso/hes"
@@ -59,7 +57,6 @@ func New(config Config) cod.Handler {
 		panic("require validate function")
 	}
 	basic := "basic"
-	basicLen := len(basic)
 	realm := defaultRealm
 	if config.Realm != "" {
 		realm = config.Realm
@@ -73,25 +70,15 @@ func New(config Config) cod.Handler {
 		if skipper(c) {
 			return c.Next()
 		}
-		auth := c.GetRequestHeader(cod.HeaderAuthorization)
+		user, password, hasAuth := c.Request.BasicAuth()
 		// 如果请求头无认证头，则返回出错
-		if len(auth) < basicLen+1 ||
-			strings.ToLower(auth[:basicLen]) != basic {
+		if !hasAuth {
 			c.SetHeader(cod.HeaderWWWAuthenticate, wwwAuthenticate)
 			err = errUnauthorized
 			return
 		}
 
-		v, e := base64.StdEncoding.DecodeString(auth[basicLen+1:])
-		// base64 decode 失败
-		if e != nil {
-			err = getBasicAuthError(e, http.StatusBadRequest)
-			return
-		}
-
-		arr := strings.Split(string(v), ":")
-		// 调用校验函数
-		valid, e := config.Validate(arr[0], arr[1], c)
+		valid, e := config.Validate(user, password, c)
 
 		// 如果返回出错，则输出出错信息
 		if e != nil {
