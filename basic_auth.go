@@ -41,7 +41,8 @@ type (
 
 var (
 	// errUnauthorized unauthorized err
-	errUnauthorized = getBasicAuthError(errors.New("unAuthorized"), http.StatusUnauthorized)
+	errUnauthorized            = getBasicAuthError(errors.New("unAuthorized"), http.StatusUnauthorized)
+	errRequireValidateFunction = errors.New("require validate function")
 )
 
 func getBasicAuthError(err error, statusCode int) *hes.Error {
@@ -54,14 +55,14 @@ func getBasicAuthError(err error, statusCode int) *hes.Error {
 // New new basic auth
 func New(config Config) cod.Handler {
 	if config.Validate == nil {
-		panic("require validate function")
+		panic(errRequireValidateFunction)
 	}
 	basic := "basic"
 	realm := defaultRealm
 	if config.Realm != "" {
 		realm = config.Realm
 	}
-	wwwAuthenticate := basic + " realm=" + realm
+	wwwAuthenticate := basic + ` realm="` + realm + `"`
 	skipper := config.Skipper
 	if skipper == nil {
 		skipper = cod.DefaultSkipper
