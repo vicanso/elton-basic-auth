@@ -1,9 +1,9 @@
-# cod-basic-auth
+# elton-basic-auth
 
-[![Build Status](https://img.shields.io/travis/vicanso/cod-basic-auth.svg?label=linux+build)](https://travis-ci.org/vicanso/cod-basic-auth)
+[![Build Status](https://img.shields.io/travis/vicanso/elton-basic-auth.svg?label=linux+build)](https://travis-ci.org/vicanso/elton-basic-auth)
 
 
-Basic auth middleware for cod.
+Basic auth middleware for elton.
 
 ```go
 package main
@@ -12,16 +12,16 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/vicanso/cod"
-	basicauth "github.com/vicanso/cod-basic-auth"
+	"github.com/vicanso/elton"
+	basicauth "github.com/vicanso/elton-basic-auth"
 	"github.com/vicanso/hes"
 )
 
 func main() {
-	d := cod.New()
+	d := elton.New()
 
 	d.Use(basicauth.New(basicauth.Config{
-		Validate: func(account, pwd string, c *cod.Context) (bool, error) {
+		Validate: func(account, pwd string, c *elton.Context) (bool, error) {
 			if account == "tree.xie" && pwd == "password" {
 				return true, nil
 			}
@@ -32,7 +32,7 @@ func main() {
 		},
 	}))
 
-	d.GET("/", func(c *cod.Context) (err error) {
+	d.GET("/", func(c *elton.Context) (err error) {
 		c.BodyBuffer = bytes.NewBufferString("hello world")
 		return
 	})

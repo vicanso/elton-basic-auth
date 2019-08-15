@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
 )
 
@@ -26,7 +26,7 @@ func TestNoVildatePanic(t *testing.T) {
 
 func TestBasicAuth(t *testing.T) {
 	m := New(Config{
-		Validate: func(account, pwd string, c *cod.Context) (bool, error) {
+		Validate: func(account, pwd string, c *elton.Context) (bool, error) {
 			if account == "tree.xie" && pwd == "password" {
 				return true, nil
 			}
@@ -42,16 +42,16 @@ func TestBasicAuth(t *testing.T) {
 		assert := assert.New(t)
 		done := false
 		mSkip := New(Config{
-			Validate: func(account, pwd string, c *cod.Context) (bool, error) {
+			Validate: func(account, pwd string, c *elton.Context) (bool, error) {
 				return false, nil
 			},
-			Skipper: func(c *cod.Context) bool {
+			Skipper: func(c *elton.Context) bool {
 				return true
 			},
 		})
-		d := cod.New()
+		d := elton.New()
 		d.Use(mSkip)
-		d.GET("/", func(c *cod.Context) error {
+		d.GET("/", func(c *elton.Context) error {
 			done = true
 			return nil
 		})
@@ -62,31 +62,31 @@ func TestBasicAuth(t *testing.T) {
 
 	t.Run("no auth header", func(t *testing.T) {
 		assert := assert.New(t)
-		d := cod.New()
+		d := elton.New()
 		d.Use(m)
-		d.GET("/", func(c *cod.Context) error {
+		d.GET("/", func(c *elton.Context) error {
 			return nil
 		})
 		resp := httptest.NewRecorder()
 		d.ServeHTTP(resp, req)
 		assert.Equal(resp.Code, http.StatusUnauthorized)
-		assert.Equal(resp.Header().Get(cod.HeaderWWWAuthenticate), `basic realm="basic auth tips"`)
+		assert.Equal(resp.Header().Get(elton.HeaderWWWAuthenticate), `basic realm="basic auth tips"`)
 	})
 
 	t.Run("auth validate fail", func(t *testing.T) {
 		assert := assert.New(t)
-		d := cod.New()
+		d := elton.New()
 		d.Use(m)
-		d.GET("/", func(c *cod.Context) error {
+		d.GET("/", func(c *elton.Context) error {
 			return nil
 		})
-		req.Header.Set(cod.HeaderAuthorization, "basic YTpi")
+		req.Header.Set(elton.HeaderAuthorization, "basic YTpi")
 		resp := httptest.NewRecorder()
 		d.ServeHTTP(resp, req)
 		assert.Equal(resp.Code, http.StatusUnauthorized)
-		assert.Equal(resp.Body.String(), "category=cod-basic-auth, message=unAuthorized")
+		assert.Equal(resp.Body.String(), "category=elton-basic-auth, message=unAuthorized")
 
-		req.Header.Set(cod.HeaderAuthorization, "basic bjph")
+		req.Header.Set(elton.HeaderAuthorization, "basic bjph")
 		resp = httptest.NewRecorder()
 		d.ServeHTTP(resp, req)
 		assert.Equal(resp.Code, http.StatusBadRequest)
@@ -96,31 +96,31 @@ func TestBasicAuth(t *testing.T) {
 	t.Run("validate error", func(t *testing.T) {
 		assert := assert.New(t)
 		mValidateFail := New(Config{
-			Validate: func(account, pwd string, c *cod.Context) (bool, error) {
+			Validate: func(account, pwd string, c *elton.Context) (bool, error) {
 				return false, errors.New("abcd")
 			},
 		})
-		d := cod.New()
+		d := elton.New()
 		d.Use(mValidateFail)
-		d.GET("/", func(c *cod.Context) error {
+		d.GET("/", func(c *elton.Context) error {
 			return nil
 		})
 		resp := httptest.NewRecorder()
 		d.ServeHTTP(resp, req)
 		assert.Equal(resp.Code, http.StatusBadRequest)
-		assert.Equal(resp.Body.String(), "category=cod-basic-auth, message=abcd")
+		assert.Equal(resp.Body.String(), "category=elton-basic-auth, message=abcd")
 	})
 
 	t.Run("auth success", func(t *testing.T) {
 		assert := assert.New(t)
-		d := cod.New()
+		d := elton.New()
 		d.Use(m)
 		done := false
-		d.GET("/", func(c *cod.Context) error {
+		d.GET("/", func(c *elton.Context) error {
 			done = true
 			return nil
 		})
-		req.Header.Set(cod.HeaderAuthorization, "basic dHJlZS54aWU6cGFzc3dvcmQ=")
+		req.Header.Set(elton.HeaderAuthorization, "basic dHJlZS54aWU6cGFzc3dvcmQ=")
 		resp := httptest.NewRecorder()
 		d.ServeHTTP(resp, req)
 		assert.True(done)

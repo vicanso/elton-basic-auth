@@ -18,24 +18,24 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
 )
 
 const (
 	defaultRealm = "basic auth tips"
 	// ErrCategory basic auth error category
-	ErrCategory = "cod-basic-auth"
+	ErrCategory = "elton-basic-auth"
 )
 
 type (
 	// Validate validate function
-	Validate func(username string, password string, c *cod.Context) (bool, error)
+	Validate func(username string, password string, c *elton.Context) (bool, error)
 	// Config basic auth config
 	Config struct {
 		Realm    string
 		Validate Validate
-		Skipper  cod.Skipper
+		Skipper  elton.Skipper
 	}
 )
 
@@ -53,7 +53,7 @@ func getBasicAuthError(err error, statusCode int) *hes.Error {
 }
 
 // New new basic auth
-func New(config Config) cod.Handler {
+func New(config Config) elton.Handler {
 	if config.Validate == nil {
 		panic(errRequireValidateFunction)
 	}
@@ -65,16 +65,16 @@ func New(config Config) cod.Handler {
 	wwwAuthenticate := basic + ` realm="` + realm + `"`
 	skipper := config.Skipper
 	if skipper == nil {
-		skipper = cod.DefaultSkipper
+		skipper = elton.DefaultSkipper
 	}
-	return func(c *cod.Context) (err error) {
+	return func(c *elton.Context) (err error) {
 		if skipper(c) {
 			return c.Next()
 		}
 		user, password, hasAuth := c.Request.BasicAuth()
 		// 如果请求头无认证头，则返回出错
 		if !hasAuth {
-			c.SetHeader(cod.HeaderWWWAuthenticate, wwwAuthenticate)
+			c.SetHeader(elton.HeaderWWWAuthenticate, wwwAuthenticate)
 			err = errUnauthorized
 			return
 		}
@@ -92,7 +92,7 @@ func New(config Config) cod.Handler {
 
 		// 如果校验失败，设置认证头，客户重新输入
 		if !valid {
-			c.SetHeader(cod.HeaderWWWAuthenticate, wwwAuthenticate)
+			c.SetHeader(elton.HeaderWWWAuthenticate, wwwAuthenticate)
 			err = errUnauthorized
 			return
 		}
