@@ -10,7 +10,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/vicanso/elton"
 	basicauth "github.com/vicanso/elton-basic-auth"
@@ -39,4 +38,5 @@ func main() {
 
 	d.ListenAndServe(":7001")
 }
+
 ```
