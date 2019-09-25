@@ -68,9 +68,10 @@ func New(config Config) elton.Handler {
 		skipper = elton.DefaultSkipper
 	}
 	return func(c *elton.Context) (err error) {
-		if skipper(c) {
+		if skipper(c) || c.Request.Method == http.MethodOptions {
 			return c.Next()
 		}
+
 		user, password, hasAuth := c.Request.BasicAuth()
 		// 如果请求头无认证头，则返回出错
 		if !hasAuth {
