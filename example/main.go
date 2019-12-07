@@ -1,11 +1,3 @@
-# elton-basic-auth
-
-[![Build Status](https://img.shields.io/travis/vicanso/elton-basic-auth.svg?label=linux+build)](https://travis-ci.org/vicanso/elton-basic-auth)
-
-
-Basic auth middleware for elton.
-
-```go
 package main
 
 import (
@@ -36,7 +28,8 @@ func main() {
 		return
 	})
 
-	d.ListenAndServe(":3000")
+	err := d.ListenAndServe(":3000")
+	if err != nil {
+		panic(err)
+	}
 }
-
-```
