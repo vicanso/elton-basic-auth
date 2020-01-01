@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	d := elton.New()
+	e := elton.New()
 
-	d.Use(basicauth.New(basicauth.Config{
+	e.Use(basicauth.New(basicauth.Config{
 		Validate: func(account, pwd string, c *elton.Context) (bool, error) {
 			if account == "tree.xie" && pwd == "password" {
 				return true, nil
@@ -23,12 +23,12 @@ func main() {
 		},
 	}))
 
-	d.GET("/", func(c *elton.Context) (err error) {
+	e.GET("/", func(c *elton.Context) (err error) {
 		c.BodyBuffer = bytes.NewBufferString("hello world")
 		return
 	})
 
-	err := d.ListenAndServe(":3000")
+	err := e.ListenAndServe(":3000")
 	if err != nil {
 		panic(err)
 	}
